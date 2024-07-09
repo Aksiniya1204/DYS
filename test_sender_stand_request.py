@@ -7,19 +7,17 @@ import data
 def post_new_order(order_body):
     return requests.post(configuration.URL_SERVICE + configuration.CREATE_ORDER,
                          headers=data.headers,
-                         json=data.order_body)
+                         json=order_body)
 
 # получение заказа по номеру трекера
 def get_order_track(track):
     return requests.get(configuration.URL_SERVICE + configuration.CREATE_ORDER + '?t=' + str(track),
                         headers=data.headers)
+def test_order_can_be_retrieved_by_track_number():
+    order_body = data.order_body
+    resp_json = post_new_order(order_body).json()
+    track_id = resp_json["track"]
 
-# запрос на получения заказа по треку заказа.
-def code_200():
-    response_code = post_new_order(data.order_body)
-    track = response_code.json()["track"]
-    return get_order_track(track).status_code
+    resp = get_order_track(track_id)
 
-# Проверка, что код ответа равен 200.
-def test_get_order_track_code_200():
-    assert code_200() == 200
+    assert resp.status_code == 200
